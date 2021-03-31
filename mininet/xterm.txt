@@ -1,0 +1,7 @@
+S1
+xterm h1 h2 h14 h4 h5 h32 h12 h23 h30 h29 h22 h27 h19 h17 h18
+
+
+
+S2
+xterm h25 h26 h15 h16 h28 h20 h10 h21 h13 h24 h31 h11 h3 h9

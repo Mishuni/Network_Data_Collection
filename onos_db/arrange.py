@@ -1,20 +1,17 @@
-# from databases import *
-# from celery import Celery
 import json
 import requests
 import os
-#from celeryconfig_db import CTRL_IP,CTRL_PORT,CTRL_ID,CTRL_PW
 from config import CTRL_IP,CTRL_PORT,CTRL_ID,CTRL_PW
 import glob
-#print(glob.glob("*.log"))
-#print(os.getcwd())
+
 FILE_ROOT=os.getcwd()
 log_folder=FILE_ROOT+"/log"
-# print(os.path.dirname(os.path.realpath(__file__)) )
+
 def main():
+    # log 폴더 없으면 만들기
     if(not os.path.isdir(log_folder)):
         os.mkdir(log_folder)
-
+    # 기존에 있던 log 파일들 다 없애기
     for i in glob.glob(log_folder+"/*.log"):
         print(i)
         os.remove(i)
@@ -29,17 +26,7 @@ def main():
     result = requests.get(ONOS_URI,auth=(CTRL_ID,CTRL_PW))
     LINK_INFO = result.json()["links"]
 
-    # with open('devices.json') as json_file:
-    #     DEVICE_INFO = json.load(json_file)["devices"]
-
-
-    # with open('hosts.json') as json_file:
-    #     HOST_INFO = json.load(json_file)["hosts"]
-
-
-    # with open('links.json') as json_file:
-    #     LINK_INFO = json.load(json_file)["links"]
-
+    # host 와 mac 주소 저장
     host = {}
     for i in range(0, len(HOST_INFO)):
         ip = HOST_INFO[i]["ipAddresses"][0]
@@ -48,13 +35,12 @@ def main():
     
     print(json.dumps(host, indent=4, sort_keys=True))
 
+    # 각 switch들의 포트 별 연결된 host 이름 저장
     topo = {}
     for i in range(0, len(DEVICE_INFO)):
         info = {"name":"","ports":{}}
         switch = DEVICE_INFO[i]["id"]
-        # if("a" in switch):
-        #     name = "S10"
-        # else:
+
         name = "S" + str(int(switch[3:],16))
         info['name']=name
         for j in range(0, len(HOST_INFO)):
@@ -63,24 +49,20 @@ def main():
             locations = HOST_INFO[j]["locations"]
             for l in range(0,len(locations)):
                 if(locations[l]["elementId"]==switch):
-                    info["ports"][locations[l]["port"]]="H"+ip # h3 h2 .. ?
+                    info["ports"][locations[l]["port"]]="H"+ip
         topo[switch]=info
 
-
+    # 각 switch들의 포트 별 연결된 switch 이름 저장
     for i in range(0, len(LINK_INFO)):
         src = LINK_INFO[i]["src"]
         dst = LINK_INFO[i]["dst"]
-        # if("a" in dst["device"]):
-        #     name = "S10"
-        # else:
-        name = "S" + str(int(dst["device"][3:],16))
-        #info['name']=name
 
-        #name = "S" + str(int(dst["device"][3:]))
+        name = "S" + str(int(dst["device"][3:],16))
         topo[src["device"]]["ports"][src["port"]]=name
 
     print(json.dumps(topo, indent=4, sort_keys=True))
 
+    # 위에서 추출한 정보를 담는 파일들 생성
     with open("topology.json", "w") as json_file:
         json.dump(topo, json_file)
 
@@ -89,8 +71,4 @@ def main():
 
     
 if __name__=="__main__":
-    # CTRL_IP = "172.17.0.3"
-    # CTRL_PORT = "8181"
-    # CTRL_ID = "onos"
-    # CTRL_PW = "rocks"
     main()

@@ -1,7 +1,6 @@
 import datetime
 import json
 from arrange import main
-#from config import CTRL_IP,CTRL_PORT,CTRL_ID,CTRL_PW
 
 CELERYBEAT_SCHEDULE = {
 	'add-every-7-seconds':{
@@ -11,7 +10,6 @@ CELERYBEAT_SCHEDULE = {
 	}
 }
 CELERY_TIMEZONE='UTC'
-
 
 main()
 with open('topology.json') as json_file:

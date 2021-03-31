@@ -14,7 +14,7 @@ def FILE_READ(file_dir):
 	f.close()
 	return data
 
-#influxDB에 스위치 DPID, 포트번호, 송/수신 트래픽 처리량을 저장하는 함수
+#influxDB에 데이터를 저장하는 함수
 def InfluxDB_InsertData(json_body ):
 	
 	client = InfluxDBClient(DB_HOST,DB_PORT,DB_USER, DB_PSWD, DB_NAME)
@@ -22,21 +22,11 @@ def InfluxDB_InsertData(json_body ):
 	print(p_write)
 	return client.write_points(json_body)
 
-
-#influxDB에 스위치 DPID, 포트번호, 송/수신 트래픽 처리량을 저장하는 함수
-def InfluxDB_InsertFlow( json_body ):
-	
-	client = InfluxDBClient(DB_HOST,DB_PORT,DB_USER, DB_PSWD, DB_NAME)
-	#p_write = "Write points: {0}" + format(json_body)
-	#print(p_write)
-	return client.write_points(json_body)
-
+#influxDB에 저장된 특정 flow를 불러오는 함수
 def select_flow(flow_id,MEASUREMENT):
 	sql = "select id,life from "+MEASUREMENT+" where id='"+flow_id+"'"
-	
 	client = InfluxDBClient(DB_HOST,DB_PORT,DB_USER, DB_PSWD, DB_NAME)
 	result = client.query(sql)
-	#print(result)
 	try:
 		return result.raw["series"][0]["values"]
 	except:

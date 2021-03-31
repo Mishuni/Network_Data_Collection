@@ -16,7 +16,7 @@ def flow_main():
     while True:
         result = requests.get(ONOS_URI,auth=(CTRL_ID,CTRL_PW))
         FLOW_INFO = result.json()["flows"]
-        #print(json.dumps(FLOW_INFO, indent=4, sort_keys=True))
+
         for flow in FLOW_INFO:
             flow_id = flow["id"]
             state = flow["state"]
@@ -24,8 +24,7 @@ def flow_main():
                 continue
             # time, id, life
             already = select_flow(flow_id,MEASUREMENT)
-            #print(already)
-            #print(len(already))
+
             time = ""
             if(len(already)>0):
                 time =already[0][0]
@@ -69,8 +68,8 @@ def flow_main():
             ]
             if time!="":
                 json_body[0]["time"]=time
-            #print(json_body)
-            InfluxDB_InsertFlow(json_body)
+                
+            InfluxDB_InsertData(json_body)
         tt.sleep(2)
 
 
